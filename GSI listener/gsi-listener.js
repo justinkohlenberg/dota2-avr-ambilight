@@ -12,10 +12,14 @@ var port = new SerialPort('COM3', {
     stopBits: 1
 });
 
-port.on('open', function() {
-    var buffer = new Buffer([0, 10]);
+var setBrightness = function(brightness) {
+    var buffer = new Buffer([0, brightness]);
     //first value in a buffer is always the display mode so the AVR knows how to handle the data
     port.write(buffer);
+}
+
+port.on('open', function() {
+    setBrightness(10);
 });
 
 port.on('data', function(data) {
