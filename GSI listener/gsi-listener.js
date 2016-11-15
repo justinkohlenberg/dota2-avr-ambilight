@@ -12,6 +12,12 @@ var port = new SerialPort('COM3', {
     stopBits: 1
 });
 
+port.on('open', function() {
+    var buffer = new Buffer([0, 10]);
+    //first value in a buffer is always the display mode so the AVR knows how to handle the data
+    port.write(buffer);
+});
+
 port.on('data', function(data) {
     if(data.toString() == "r") {
         ready = true;
