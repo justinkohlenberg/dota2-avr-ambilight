@@ -128,6 +128,7 @@ void __attribute__((noinline)) led_strip_write(rgb_color * colors, unsigned int 
 #define LED_COUNT 60
 
 //state definitions, current state is decided by node application and sent over serial
+#define LED_MODE_CONFIGURE 0
 #define LED_MODE_STATUS 1
 #define LED_MODE_VICTORY 2
 #define LED_MODE_STUNNED 3
@@ -144,6 +145,9 @@ int main()
 	uint8_t timer = 0;
 	uint8_t incr = 3;
 	uint8_t victory = 0;
+	uint8_t brightness = 25;
+	
+	rgb_color colorOff = (rgb_color){0, 0, 0};
 	
 	DDRD &= ~(1<<PD3);
 	DDRD &= ~(1<<PD2);
@@ -154,7 +158,7 @@ int main()
 	
 	for(uint8_t i = 0; i < LED_COUNT; i++)
 	{
-		colors[i] = (rgb_color){0, 0, 0};
+		colors[i] = colorOff;
 	}
 
 	led_strip_write(colors, LED_COUNT);
@@ -170,11 +174,16 @@ int main()
 			_delay_ms(20);
 			switch(ledMode)
 			{
+				case LED_MODE_CONFIGURE:
+				{
+					brightness = uart0_getc();
+					_delay_ms(20);
+				}
 				case LED_MODE_STUNNED:
 				{
 					for(uint8_t i = 0; i < 40; i++)
 					{
-						colors[i] = (rgb_color){122, 122, 122};
+						colors[i] = (rgb_color){brightness*2, brightness*2, brightness*2};
 					}
 					break;
 				}
@@ -182,11 +191,10 @@ int main()
 				{
 					for(uint8_t i = 0; i < 2; i++) {
 						rgb_color color;
-						if(i == 0) {
-							color = (rgb_color){0, 25, 0};
-							} else if(i == 1) {
-							color = (rgb_color){0, 0, 25};
-						}
+						if(i == 0)
+							color = (rgb_color){0, brightness, 0}; 
+						if(i == 1)
+							color = (rgb_color){0, 0, brightness};
 						uint8_t ledAmount = uart0_getc();
 						for(uint8_t l = 0 + (i*20); l < ledAmount + (i*20); l++)
 						{
@@ -221,7 +229,7 @@ int main()
 				colors[l] = (rgb_color){0, timer, 0};
 			}
 			timer += incr;
-			if (timer % 60 == 0)
+			if (timer % brightness == 0)
 				incr *= -1;
 			led_strip_write(colors, LED_COUNT);
 			_delay_ms(20);
