@@ -159,7 +159,7 @@ int main()
 
 	led_strip_write(colors, LED_COUNT);
 	_delay_ms(20);
-	//uart0_puts("ready");
+	//uart0_puts("r");
 	
 	while(1)
 	{		
