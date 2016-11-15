@@ -1,1 +1,1 @@
-dota2-avr-ambilight
+Dota 2 Ambient Light, made possible with Game State Integration.
