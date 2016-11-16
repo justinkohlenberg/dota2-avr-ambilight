@@ -39,6 +39,7 @@ app.use(bodyParser.json());
 app.post('/', function(req, res) {
     if(!ready) {
         // uC is not ready to receive new data yet, drop this frame.
+        res.end();
         return;
     }
     if(req.body.map) {
@@ -46,12 +47,14 @@ app.post('/', function(req, res) {
             //first value in a buffer is always the display mode so the AVR knows how to handle the data
             var buffer = new Buffer([2, (req.body.map.win_team == req.body.player.team_name) ? 1 : 0])
             port.write(buffer);
+            res.end();
             return;
         }
 
         if(req.body.hero.stunned) {
             var buffer = new Buffer([3]);
             port.write(buffer);
+            res.end();
             return;
         }
 
@@ -60,12 +63,14 @@ app.post('/', function(req, res) {
         var manaLeds = Math.round(req.body.hero.mana_percent/percentagePerLed);
         var ledAmount = healthLeds + manaLeds;
         if(prevLeds == ledAmount) {
+            res.end();
             return;
         }
-        var buffer = new Buffer([1, healthLeds, manaLeds]);
+        var buffer = new Buffer([1, healthLeds, 0, manaLeds, 0]);
         port.write(buffer);
         prevLeds = ledAmount;
         ready = false;
+        res.end();
     }
 })
 
