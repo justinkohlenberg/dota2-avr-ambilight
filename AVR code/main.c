@@ -82,23 +82,29 @@ int main()
 						rgb_color color;
 						rgb_color dimColor;
 						if(i == 0)
+						{
 							color = (rgb_color){0, brightness, 0};
-							dimColor = (rgb_color){0, brightness/2, 0}; 
+							dimColor = (rgb_color){0, brightness/3, 0}; 
+						}
 						if(i == 1)
+						{
 							color = (rgb_color){0, 0, brightness};
-							dimColor  = (rgb_color){0, 0, brightness/2};
+							dimColor  = (rgb_color){0, 0, brightness/3};
+						}
 						uint8_t ledAmount = uart0_getc();
 						for(uint8_t l = 0 + (i*20); l < ledAmount + (i*20); l++)
 						{
 							colors[l] = color;
 						}
-						if((uint8_t) uart0_getc())
-						{
-							colors[ledAmount + (i*20) + 1] = dimColor;
-						}
+						uint8_t halfLed = uart0_getc();
+						_delay_ms(10);
 						for(uint8_t l = ledAmount + (i*20); l < ledAmount + 20 + (i*20); l++)
 						{
 							colors[l] = (rgb_color){4, 0, 0};
+							if(halfLed && l == ledAmount + (i*20))
+							{
+								colors[l] = dimColor;
+							}
 						}
 						_delay_ms(10);
 					}
