@@ -51,7 +51,7 @@ int main()
 
 	led_strip_write(colors, LED_COUNT);
 	_delay_ms(10);
-	//uart0_puts("r");
+	uart0_puts("i");
 	
 	while(1)
 	{		
