@@ -34,7 +34,7 @@ rgb_color colors[LED_COUNT];
 
 int main()
 {	
-	//init UART and make sure buffer is empty
+	//initialize UART and make sure buffer is empty
 	uart0_init(UART_BAUD_SELECT(BAUD_RATE, F_CPU));
 	uart0_flush();
 	
