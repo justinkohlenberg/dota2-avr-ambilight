@@ -19,14 +19,17 @@ var setBrightness = function(brightness) {
 }
 
 port.on('open', function() {
-    setBrightness(10);
+    setBrightness(25);
 });
 
 port.on('data', function(data) {
     if(data.toString() == "r") {
         ready = true;
+    } else if (data.toString() == "i") {
+        setBrightness(25);
+    } else {
+        console.log('serial raw:' + data);
     }
-    console.log('serial raw:' + data);
 });
 
 port.on('open', function(){
@@ -66,7 +69,7 @@ app.post('/', function(req, res) {
             res.end();
             return;
         }
-        var buffer = new Buffer([1, healthLeds, 0, manaLeds, 0]);
+        var buffer = new Buffer([1, healthLeds, 1, manaLeds, 1]);
         port.write(buffer);
         prevLeds = ledAmount;
         ready = false;

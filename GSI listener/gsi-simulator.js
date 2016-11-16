@@ -78,6 +78,8 @@ var sendJSON = function() {
     });
     JSON.hero.health_percent+=5;
     JSON.hero.health_percent %= 100;
+    JSON.hero.mana_percent+=5;
+    JSON.hero.mana_percent %= 100;
 }
 
 ps.lookup({
