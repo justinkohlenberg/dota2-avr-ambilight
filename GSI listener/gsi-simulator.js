@@ -19,7 +19,7 @@ var JSON = {
 		"game_time": 2062,
 		"clock_time": 2061,
 		"daytime": true,
-		"nightstalker_night": false,
+		"nightstalker_night": true,
 		"game_state": "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS",
 		"win_team": "none",
 		"customgamename": "hero_demo",
@@ -76,21 +76,24 @@ var sendJSON = function() {
             console.log(error);
         }
     });
+    JSON.map.nightstalker_night = false;
     JSON.hero.health_percent+=5;
     JSON.hero.health_percent %= 100;
     JSON.hero.mana_percent+=5;
     JSON.hero.mana_percent %= 100;
 }
 
-ps.lookup({
-    command: 'node',
-    arguments: 'gsi-listener',
-}, function(err, resultList) {
-    if(resultList.length == 0) {
-        console.log('no listener found, please run the gsi-listener');
-        process.exit();
-    } else {
-        console.log('listener found, simulating data now..');
-        setInterval(sendJSON, 2000);
-    }
-});
+setInterval(sendJSON, 2000);
+
+// ps.lookup({
+//     command: 'node',
+//     arguments: 'gsi-listener',
+// }, function(err, resultList) {
+//     if(resultList.length == 0) {
+//         console.log('no listener found, please run the gsi-listener');
+//         process.exit();
+//     } else {
+//         console.log('listener found, simulating data now..');
+//         setInterval(sendJSON, 2000);
+//     }
+// });

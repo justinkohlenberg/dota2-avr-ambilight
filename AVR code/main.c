@@ -20,6 +20,7 @@
 #define LED_MODE_STATUS 1
 #define LED_MODE_VICTORY 2
 #define LED_MODE_STUNNED 3
+#define LED_MODE_NS_NIGHT 4
 
 //each color in this array represents a single led, index 0 being the first LED.
 rgb_color colors[LED_COUNT];
@@ -33,6 +34,7 @@ int main()
 	uint8_t timer = 0;
 	uint8_t incr = 3;
 	uint8_t victory = 0;
+	uint8_t nsNight = 0;
 	uint8_t brightness = 25;
 	
 	rgb_color colorOff = (rgb_color){0, 0, 0};
@@ -71,7 +73,7 @@ int main()
 				{
 					for(uint8_t i = 0; i < 40; i++)
 					{
-						colors[i] = (rgb_color){brightness*2, brightness*2, brightness*2};
+						colors[i] = (rgb_color){brightness, brightness, brightness};
 					}
 					break;
 				}
@@ -116,11 +118,36 @@ int main()
 					
 					break;
 				}
+				case LED_MODE_NS_NIGHT:
+				{
+					nsNight = 1;
+				}
 				default:
 					break;
 			}
 			
 			updated = 1;
+		}
+		
+		if(nsNight)
+		{
+			for(uint8_t l = 0; l < 40; l++)
+			{
+				/*R: 82 G: 94 B: 167*/
+				uint8_t r = timer < 82 ? 41 - (timer/2) : 0;
+				uint8_t g = timer < 94 ? 47 - (timer/2) : 0;
+				uint8_t b = timer < 83 ? 83 - timer : 0;
+				colors[l] = (rgb_color){r, g, b};
+			}
+			led_strip_write(colors, LED_COUNT);
+			_delay_ms(10);
+			timer += incr;
+			if (timer >= 83)
+			{
+				nsNight = 0;
+				timer = 0;
+				uart0_puts("n");
+			}
 		}
 		
 		if(victory)
@@ -136,7 +163,7 @@ int main()
 			_delay_ms(10);
 		}
 		
-		if(updated && !victory) {
+		if(updated && !victory && !nsNight) {
 			led_strip_write(colors, LED_COUNT);
 			_delay_ms(10);
 			uart0_puts("r");

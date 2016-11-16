@@ -23,12 +23,19 @@ port.on('open', function() {
 });
 
 port.on('data', function(data) {
-    if(data.toString() == "r") {
-        ready = true;
-    } else if (data.toString() == "i") {
-        setBrightness(25);
-    } else {
-        console.log('serial raw:' + data);
+    switch(data.toString()) {
+        case "r":
+            ready = true;
+            break;
+        case "i":
+            setBrightness(25);
+            break;
+        case "n":
+            prevNight = false;
+            break;
+        default:
+            console.log(data);
+            break;
     }
 });
 
@@ -49,6 +56,14 @@ app.post('/', function(req, res) {
         if(req.body.map.win_team != 'none') {
             //first value in a buffer is always the display mode so the AVR knows how to handle the data
             var buffer = new Buffer([2, (req.body.map.win_team == req.body.player.team_name) ? 1 : 0])
+            port.write(buffer);
+            res.end();
+            return;
+        }
+
+        if(req.body.map.nightstalker_night && prevNight != req.body.map.nightstalker_night) {
+            prevNight = true;
+            var buffer = new Buffer([4]);
             port.write(buffer);
             res.end();
             return;
@@ -79,5 +94,6 @@ app.post('/', function(req, res) {
 
 var ready = true;
 var prevLeds = 0;
+var prevNight = false;
 var server = app.listen(4000, '127.0.0.1');
 console.log('listening to localhost:4000');
