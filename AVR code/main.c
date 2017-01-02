@@ -8,6 +8,7 @@
 #include <util/delay.h>
 #include "uart.h"
 #include "ws2812b.h"
+#include "color.h"
 
 //baud rate for serial communication with PC
 #define BAUD_RATE 9600
